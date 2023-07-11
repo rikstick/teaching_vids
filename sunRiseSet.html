@@ -54,7 +54,7 @@ function meanAnomaly(t)
 function trueLongitude(M)
 {
   var L;
-  L= M + (1.916 * Math.sin((3.1415265/180.0)*M)) + (0.020 * Math.sin((3.1415265/180.0)*2 * M)) + 282.634;
+  L= M + (1.916 * Math.sin((Math.PI/180.0)*M)) + (0.020 * Math.sin((Math.PI/180.0)*2 * M)) + 282.634;
   if(L>360){
     while(L > 360)
     {
@@ -75,7 +75,7 @@ function trueLongitude(M)
 function rightAscension(L)
 {
   var RA;
-  RA = (180/3.1415265)*Math.atan(0.91764 * Math.tan((3.1415265/180)*L)) 
+  RA = (180/Math.PI)*Math.atan(0.91764 * Math.tan((Math.PI/180)*L)) 
   
   if(RA>360){
     while(RA > 360)
@@ -114,8 +114,8 @@ function declination(L)
 {
   var sinDec;
   var cosDec;
-  sinDec = 0.39782 * Math.sin((3.14159265/180.0)*L);
-  cosDec = Math.cos((3.1415265/180)*(180/3.1415265)*Math.asin(sinDec));
+  sinDec = 0.39782 * Math.sin((Math.PI/180.0)*L);
+  cosDec = Math.cos((Math.PI/180)*(180/Math.PI)*Math.asin(sinDec));
 
  localHourAngle(cosDec, sinDec);
 }
@@ -123,7 +123,7 @@ function declination(L)
 function localHourAngle(cosDec, sinDec)
 {
   var cosH;
- cosH = (Math.cos((3.14159265/180.0)*90.833333) - (sinDec * Math.sin((3.14159265/180.0)*latitude))) / (cosDec * Math.cos((3.14159265/180.0)*latitude));
+ cosH = (Math.cos((Math.PI/180.0)*90.833333) - (sinDec * Math.sin((Math.PI/180.0)*latitude))) / (cosDec * Math.cos((Math.PI/180.0)*latitude));
   if (cosH >  1){
 	  alert("The sun never rises on this location on the specified date");
 	  return;
@@ -141,11 +141,11 @@ function completeHourAngle(cosH)
   
  if(rise==1)
   {
-     H = 360 - (180/3.1415265)*Math.acos(cosH);
+     H = 360 - (180/Math.PI)*Math.acos(cosH);
   }
   else
   {
-     H = (180/3.1415265)*Math.acos(cosH);
+     H = (180/Math.PI)*Math.acos(cosH);
   }
 	
   H = H / 15.0;
