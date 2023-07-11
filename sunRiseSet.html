@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Sunrise/sunset calculator</title>
+<script type="text/javascript">
+
+var rise; //globals (I know I'm lazy, but I know what I'm doing)
+var latitude;
+var TIME;
+var RA_;
+var t_;
+var lngHour_;
+
+function dayOfYear(form)
+{
+ var N1, N2, N3;
+ latitude=parseFloat(form.lat.value);
+ 
+  N1 = Math.floor(275 * parseFloat(form.month.value) / 9.0);
+  N2 = Math.floor((parseFloat(form.month.value) + 9) / 12.0);
+  N3 = (1 + Math.floor((parseFloat(form.year.value) - 4 * Math.floor(parseFloat(form.year.value) / 4) + 2) / 3.0))
+  N = N1 - (N2 * N3) + parseFloat(form.day.value) - 30;
+  if(form.rise_set[0].checked){
+    rise = 1;}
+  else{
+    rise=0;}
+  hourValue(N, latitude, parseFloat(form.lon.value));
+}//end dayOfYear
+
+function hourValue(N, lat, lon)
+{
+ var lngHour;
+ var t;
+ lngHour = lon/15.0;
+ lngHour_ = lngHour;//load global variable
+
+ if(rise == 1){
+   t = N + ((6 - lngHour) / 24.0);}
+ else{
+   t = N + ((18 - lngHour) / 24.0);}
+ meanAnomaly(t);
+
+}//end hourValue 
+
+function meanAnomaly(t)
+{
+  var M;
+  M= (0.9856 * t) - 3.289;
+  t_ = t;//load global variable
+  trueLongitude(M);
+
+}
+
+function trueLongitude(M)
+{
+  var L;
+  L= M + (1.916 * Math.sin((3.1415265/180.0)*M)) + (0.020 * Math.sin((3.1415265/180.0)*2 * M)) + 282.634;
+  if(L>360){
+    while(L > 360)
+    {
+      L=L-360;
+    }
+  }
+ 
+  if(L < 0){
+   while(L < 0)
+   {
+    L = L + 360;
+   }
+  }
+  rightAscension(L);
+
+}//end true longitude
+
+function rightAscension(L)
+{
+  var RA;
+  RA = (180/3.1415265)*Math.atan(0.91764 * Math.tan((3.1415265/180)*L)) 
+  
+  if(RA>360){
+    while(RA > 360)
+    {
+      RA=RA-360;
+    }
+  }
+  if(RA < 0){
+   while(RA < 0)
+   {
+    RA = RA + 360;
+   }
+  }
+  adjustRightAscension(L, RA);
+
+}//end rightAscension
+
+function adjustRightAscension(L, RA)//L & RA need to be in same Cartesian quadrant
+{
+  var Lquadrant;
+  var RAquadrant;
+  Lquadrant  = (Math.floor( L/90.0)) * 90;
+  RAquadrant = (Math.floor(RA/90.0)) * 90;
+  RA = RA + (Lquadrant - RAquadrant);
+  convert_RA_hours(RA, L);
+}//end function
+
+function convert_RA_hours(RA, L)
+{
+  RA = RA /15.0;
+  RA_ = RA;//load global variable
+  declination(L);
+}
+
+function declination(L)
+{
+  var sinDec;
+  var cosDec;
+  sinDec = 0.39782 * Math.sin((3.14159265/180.0)*L);
+  cosDec = Math.cos((3.1415265/180)*(180/3.1415265)*Math.asin(sinDec));
+
+ localHourAngle(cosDec, sinDec);
+}
+
+function localHourAngle(cosDec, sinDec)
+{
+  var cosH;
+ cosH = (Math.cos((3.14159265/180.0)*90.833333) - (sinDec * Math.sin((3.14159265/180.0)*latitude))) / (cosDec * Math.cos((3.14159265/180.0)*latitude));
+  if (cosH >  1){
+	  alert("The sun never rises on this location on the specified date");
+	  return;
+  }
+  if (cosH < -1){
+	  alert("The sun never sets on this location on the specified date");
+	  return;
+  }
+  completeHourAngle(cosH);
+}
+
+function completeHourAngle(cosH)
+{
+ var H;
+  
+ if(rise==1)
+  {
+     H = 360 - (180/3.1415265)*Math.acos(cosH);
+  }
+  else
+  {
+     H = (180/3.1415265)*Math.acos(cosH);
+  }
+	
+  H = H / 15.0;
+  localMeanTime(H);
+
+}
+
+function localMeanTime(H)
+{
+ var T;
+ var std;
+ T = H + RA_ - (0.06571 * t_) - 6.622;
+
+ UTC(T);
+
+}
+
+function UTC(T)
+{
+  var UT;
+  var msg;
+  var whole;
+  var dec;
+  var myTime;
+  var min;
+  UT = T - lngHour_;
+
+  if(UT > 24)
+  {
+    while(UT > 24)
+    {
+      UT = UT -24;
+    }
+  }
+  
+  if(UT < 0)
+  {
+   while(UT < 0)
+   {
+     UT = UT + 24;
+   }
+  }
+
+ std= UT + (-4);
+if(std < 0)
+{
+ std = std + 24;
+}
+ whole= Math.floor(std);
+ dec = std - whole;
+ min = dec * 60;
+
+if(rise==1)
+{ 
+ msg="Sunrise will occur at: ";
+}
+else
+{
+ msg="Sunset will occur at: ";
+}
+
+alert(msg + whole + ":" + Math.round(min) + " Standard Time");
+
+}//end UTC
+
+</script>
+</head>
+<body bgcolor = "cyan">
+<div align="center">
+<h1>****Sunrise/sunset Calculator****</h1>
+<form name = "riseSet" id="riseSet" action="">
+<table border="0" cellpadding="4" cellspacing="4" >
+<tr>
+<td align="right">Sunrise:</td><td align="left"><input type="radio" name="rise_set" checked="checked" value="rise" />
+Sunset:<input type="radio" name="rise_set" value="set" /></td>
+</tr>
+
+<tr>
+<td>Enter day:</td><td><input type="text" value="25" name="day" /></td>
+</tr>
+<tr>
+<td>Enter month:</td><td><input type = "text" value="6" name="month" /></td>
+</tr>
+<tr>
+<td>Enter year:</td><td><input type="text" value="2023" name="year" /></td>
+</tr>
+<tr>
+<td>Enter latitude:</td><td><input type="text" value ="26.869570437037563" name="lat" /></td>
+</tr>
+<tr>
+<td>Enter longitude:</td><td><input type="text" value="-82.00270317335864" name="lon" /></td><td>(positive for east, negative for west)</td>
+</tr>
+<tr>
+<td><input type="button" Value="Calculate" onclick="dayOfYear(document.riseSet)" /></td><td><input type="reset" value="Reset" /></td>
+</tr>
+</table>
+</form>
+
+</div>
+</body>
+</html>
