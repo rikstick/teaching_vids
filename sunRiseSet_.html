@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<title>Sunrise and Sunset Calculator</title> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="sunrise2.js"> </script> 
+	<style>
+		h1{
+			  text-align: center;
+		  }
+		table#table1 {
+			width:20%; 
+			margin-left:27.5%; 
+			margin-right:27.5%;
+		  }
+
+		table.center {
+					  margin-left: auto; 
+					  margin-right: auto;
+					  border-spacing: 3px;
+					}
+		th, td {
+				  padding-top: 1px;
+				  padding-bottom: 1px;
+				  padding-left: 1px;
+				  padding-right: 1px;
+				}
+		
+	</style>
+	
+</head>
+
+   <body> 
+	<h1>Sunrise and Sunset Calculator</h1> 
+	<hr> 
+	<form method="post" name="riseSet" id="form1" action="#"> 
+		<table id ="table1"> 
+			<tbody> 
+				<tr> 
+					<td> 
+						<div style="float: right">
+						Sunrise:
+						</div></td>
+						<td><input name="rise_set" checked="checked" type="radio" id="radio" > </td>
+				</tr>
+				<tr>
+					<td> 
+						<div style="float: right">
+						Sunset:
+						</div></td>
+						<td><input name="rise_set" type="radio" id="radio2" > </td>
+				</tr>
+				</tbody>
+				</table>
+				<hr>
+		<table class="center"> 
+			<tbody> 
+				<tr> 
+					<td> 
+						<div style="float: right">
+						Official:
+						</div></td>
+						<td><input name="riseType" checked="checked" type="radio" id="radio3" > </td>
+				</tr>
+				<tr>
+					<td>
+						<div style="float: right">
+						Civil:
+						</div></td>
+						<td> <input name="riseType" type="radio" id="radio4" > </td> 
+				</tr>
+				<tr>
+					<td> 
+						<div style="float: right">
+						Nautical:
+						</div></td>
+						<td><input name="riseType" type="radio" id="radio5" > </td> 
+				</tr>
+				<tr>
+					<td> 
+						<div style="float: right">
+						Astronomical:
+						</div></td>
+						<td><input name="riseType" type="radio" id="radio6" > </td> 
+				</tr>
+				<tr> 
+					<td> 
+					<div style="float: right"> 
+					Offset from Greenwich England: 
+					</div> 
+					</td> 
+					<td><input name="offset" value="-5" maxLength="3" onblur="MM_validateForm('offset','','RinRange-12:12');return document.MM_returnValue" id="offset" >
+					Determine your <a href="http://www.worldtimezone.com/">offset</a></td> 
+				</tr> 
+				<tr> 
+					<td> 
+					<div style="float: right"> 
+					Month: 
+					</div> 
+					</td> 
+					<td><input name="month" value ="4" maxLength="2" onblur="MM_validateForm('month','','RinRange1:12');return document.MM_returnValue" id="month" ></td> 
+				</tr> 
+				<tr> 
+					<td> 
+					<div style="float: right"> 
+					Day: 
+					</div> 
+					</td> 
+					<td><input name="day" value = "4" maxLength="2" onblur="MM_validateForm('day','','RinRange1:31');return document.MM_returnValue" id="day" ></td> 
+				</tr> 
+				<tr> 
+					<td> 
+					<div style="float: right"> 
+					Year: 
+					</div> 
+					</td> 
+					<td><input name="year" value ="2023" maxLength="5" onblur="MM_validateForm('year','','RinRange0:2175');return document.MM_returnValue" id="year" ></td> 
+				</tr> 
+				<tr> 
+					<td> 
+					<div style="float: right"> 
+					Latitude: 
+					</div> 
+					</td> 
+					<td><input name="lat" value="26.5072" onblur="MM_validateForm('lat','','RinRange-90:90');return document.MM_returnValue" id="lat" > 
+				   (Positive for north, negative for south)</td> 
+				</tr> 
+				<tr> 
+					<td> 
+					<div style="float: right;">
+					Longitude: 
+					</div> 
+					</td> 
+					<td><input value ="-81.9132 " name="lon" onblur="MM_validateForm('lon','','RinRange-180:180');return document.MM_returnValue" id="lon" > 
+				   (Positive for east, negative for west)</td> 
+				</tr> 
+				<tr> 
+					<td colspan="2"> 
+					<div style="text-align: center"> 
+					<input name="submit" value ="Calculate" type="button" onclick="dayOfYear(document.riseSet)" id="submit" >&nbsp; &nbsp; <input name="Reset" type="reset" id="button" > 
+					</div> 
+					</td> 
+				</tr> 
+			</tbody> 
+		</table> 
+	</form> 
+	<p> 
+		<a href="http://en.wikipedia.org/wiki/Civil_twilight#Civil_twilight">Definitions of civil, nautical, etc.</a> 
+		<a href="http://www.satsig.net/maps/lat-long-finder.htm">Find your latitude and longitude</a><br> 
+		<a href="https://www.rapidtables.com/convert/number/degrees-minutes-seconds-to-degrees.html">Convert degrees, minutes and seconds into decimal degrees</a><br> 
+		<a href="mailto:rikstick@yahoo.com?subject=Sunrise_sunset_calculator">Comments or questions?</a><br> 
+		<br> 
+	The algorithm used for this calculator was based on: &quot;Almanac for Computers, 1990 published by Nautical Almanac Office United States Naval Observatory Washington, DC 20392&quot; 
+	</p> 
+
+</body>
+</html>
