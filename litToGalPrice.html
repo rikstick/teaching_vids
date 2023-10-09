@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.heighttext
+{ height:30px }
+</style>
+<title>Get Price of gas per gallon </title>
+<script>
+function convert(myForm){
+   let gal= myForm.price.value
+  gal = 3.785 * gal;
+  gal=gal/54
+  php = Math.round((gal + Number.EPSILON) * 100) / 100
+  alert("The approximate value is $" +php + " per gallon")
+}
+</script>
+</head>
+<body>
+<form action="#">
+&nbsp; &nbsp; <h1> Enter Price per liter of gas in PHP</h1>
+ <input class = "heighttext" type = "number"  name = "price"  />
+ <input class = "heighttext" type= "button" value="Convert" onclick = "convert(this.form)"  />
+</form>
+</body>
+</html>
