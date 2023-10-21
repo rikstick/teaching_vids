@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JavaScript nested for loop example</title>
+	<script> 
+		/* The Haversine formula can be broken into 4 parts: a,c,d and R
+			a = sin²(Δφ/2) + cos φ1 * cos φ2 * sin²(Δλ/2)
+			c = 2 * atan2( √a, √(1−a) )
+			d = R * c
+			where φ is latitude, λ is longitude, R is earth’s radius (mean radius = 6,371km);
+			note that angles need to be in radians to pass to trig functions! */
+		/*Convert Haversine formula into the world of JavaScript, but first, 
+		  grab lats and lons */
+		
+		function getLatsLons(formData){
+			
+			let txtMiles = "";
+			let txtKm = "";
+			let lat1 = formData.lat1.value;
+			let lon1 = formData.lon1.value
+		
+			let lat2 = formData.lat2.value;
+			let lon2 = formData.lon2.value;
+			
+			const R = 6371e3;//in meters
+			const latRad1 = lat1 * Math.PI/180; //convert first latitude into radians
+			const latRad2 = lat2 * Math.PI/180; //convert second latitude into radians
+			const difLats = (lat2-lat1) * Math.PI/180; //difference of lats converted to radians
+			const difLons = (lon2-lon1) * Math.PI/180; //difference of lons converted to radians
+			const a = Math.sin(difLats/2) * Math.sin(difLats/2) + 
+				 Math.cos(latRad1) * Math.cos(latRad2) *
+			  Math.sin(difLons/2) * Math.sin(difLons/2);
+			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+			const d = R * c; // in meters
+			const miles = d / 1609.344; //convert meters to miles
+			const km = miles * 1.609344; // convert miles to kilometers
+		
+			txtMiles = "Miles: " + miles.toLocaleString();
+			txtKm = "Kilometers: " + km.toLocaleString();
+			alert(txtMiles + "\n" + txtKm);
+		}	
+	</script>
+</head>
+<body>
+	<h3>Find distance between two latitude and longitude points using the Haversine formula</h3>
+	<h4>This formula assumes the earth is a sphere and it calculates as the crow flies</h4>
+	<p>The Haversine formula can be broken into 4 parts: a,c,d and R <br>
+			a = sin²(Δφ/2) + cos φ1 * cos φ2 * sin²(Δλ/2)<br>
+			c = 2 * atan2( √a, √(1−a) )<br>
+			d = R * c 
+	</p>
+		<form id = "latsAndLons">
+			<table>
+				<tr>
+					<td>Start Point Latitude </td> 
+						<td><input type = "number" id = "lat1" value = "26.8694076"></td>
+				</tr>
+					
+				<tr>
+					<td>Start Point Longitude</td> 
+						<td><input type = "number" id = "lon1" value = "-82.0023697"></td>
+				</tr>
+				<tr>
+					<td>End Point Latitude </td>
+						<td><input type = "number" id = "lat2" value = "10.3266669"></td>
+				</tr>
+				<tr>
+					<td>End Point Longitude</td>
+						<td><input type = "number" id = "lon2" value = "123.9441546"></td>
+				</tr>
+		</table>
+			<hr>
+			<h4>Distance between the two points are in miles and meters</h4>
+			<p style = "color: blue" id ="miles"></p>
+			<p style = "color: blue" id = "meters"></p>
+			<input type = "submit" value = "Get Distance" onclick="getLatsLons(this.form)" >
+	</form>
+    
+</body>
+</html>
