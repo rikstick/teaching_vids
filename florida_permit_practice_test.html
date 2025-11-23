@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Florida Permit Practice Test Created for Arissa Bass</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    #intro {
+      margin: 10px 0 15px 0;
+      padding: 10px 15px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+      font-size: 0.95em;
+    }
+    #bottomControls, #results {
+      margin: 15px 0;
+      padding: 10px 15px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    .question-card {
+      background: #ffffff;
+      margin: 10px 0;
+      padding: 12px 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.08);
+    }
+    .question-text {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .choices label {
+      display: block;
+      margin: 3px 0;
+      cursor: pointer;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #777;
+      background: #e0e0e0;
+      margin-right: 8px;
+    }
+    button:hover {
+      background: #d0d0d0;
+    }
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+    .feedback {
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px solid #ddd;
+      font-size: 0.9em;
+    }
+    .correct-answer {
+      color: green;
+    }
+    .your-answer {
+      color: #333;
+    }
+    .incorrect {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Florida Class E Learner Permit Practice Test</h1>
+  <h2>Random 50 Question Exam</h2>
+
+  <div id="intro">
+    This practice test automatically builds a new fifty question exam from a larger pool every time the page loads
+    or you click “New Test”. The real Florida learner permit exam requires forty correct answers out of fifty to pass.
+  </div>
+
+  <div id="testContainer"></div>
+
+  <div id="bottomControls">
+    <button id="submitBtn">Submit Test for Grading</button>
+    <button id="startBtn">New Test (Random Questions)</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const QUESTIONS_PER_TEST = 50;
+    const PASSING_SCORE = 40;
+
+    const questionPool = [
+      {
+        question: "Unless posted otherwise, what is the speed limit in a Florida residential or business area?",
+        choices: ["20 mph", "25 mph", "30 mph", "35 mph"],
+        correctIndex: 2
+      },
+      {
+        question: "Unless posted otherwise, what is the usual speed limit on most Florida roads and highways outside cities or towns?",
+        choices: ["45 mph", "50 mph", "55 mph", "65 mph"],
+        correctIndex: 2
+      },
+      {
+        question: "On some rural Florida interstate highways, what is the maximum speed limit where it is specifically posted?",
+        choices: ["60 mph", "65 mph", "70 mph", "75 mph"],
+        correctIndex: 2
+      },
+      {
+        question: "In an active Florida school zone, what speed is most often posted unless the sign shows a different limit?",
+        choices: ["15 mph", "20 mph", "25 mph", "30 mph"],
+        correctIndex: 1
+      },
+      {
+        question: "If there is no posted speed limit sign, you should:",
+        choices: [
+          "Drive at the speed of the fastest traffic",
+          "Guess based on what others are doing",
+          "Use the general Florida limits for that type of road",
+          "Always drive at least 10 mph under what feels safe"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "The safest way to judge following distance in good conditions is to use:",
+        choices: [
+          "The one car length rule",
+          "The three second rule",
+          "The mirror check rule",
+          "The horn warning rule"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "How should you adjust your following distance in rain, fog or heavy traffic?",
+        choices: [
+          "Keep it the same as in clear weather",
+          "Reduce it so you can react faster",
+          "Increase it to give yourself more time",
+          "Turn on hazard lights instead of changing distance"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "You are following another car. What is the three second rule?",
+        choices: [
+          "You must pass within three seconds",
+          "You must look in your mirrors every three seconds",
+          "Your car should pass a fixed object at least three seconds after the car ahead",
+          "You should tap your brakes every three seconds"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When must you use your headlights in Florida?",
+        choices: [
+          "Only when you cannot see road signs",
+          "From sunset to sunrise and when visibility is poor",
+          "Only when driving faster than 45 mph",
+          "Only on rural roads"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "You should dim your high beam headlights when an oncoming vehicle is within:",
+        choices: ["100 feet", "300 feet", "500 feet", "1000 feet"],
+        correctIndex: 2
+      },
+      {
+        question: "You should dim your high beams when you are following another vehicle within:",
+        choices: ["100 feet", "200 feet", "300 feet", "500 feet"],
+        correctIndex: 2
+      },
+      {
+        question: "An octagon shaped sign means:",
+        choices: ["Yield", "Stop", "Warning", "Railroad crossing"],
+        correctIndex: 1
+      },
+      {
+        question: "A downward pointing triangle sign means:",
+        choices: ["Stop", "No passing zone", "Yield", "Speed limit"],
+        correctIndex: 2
+      },
+      {
+        question: "A diamond shaped sign is used for:",
+        choices: [
+          "School zones only",
+          "Guide and information",
+          "Regulatory signs such as speed limits",
+          "Warning signs such as curves or merging traffic"
+        ],
+        correctIndex: 3
+      },
+      {
+        question: "A round yellow sign with a black X and two R letters warns you of:",
+        choices: ["A hospital", "A railroad crossing ahead", "A school zone", "A no passing zone"],
+        correctIndex: 1
+      },
+      {
+        question: "Orange colored signs are used for:",
+        choices: [
+          "Tourist information",
+          "Parks and recreation",
+          "Construction and work zones",
+          "Emergency detours only"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "A pennant shaped yellow sign on the left side of the road means:",
+        choices: [
+          "No U-turn",
+          "No passing zone",
+          "Slower traffic keep right",
+          "Two way traffic ahead"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "Brown road signs are used to identify:",
+        choices: [
+          "Rest areas only",
+          "Parks, recreation and historic sites",
+          "Construction zones",
+          "Gas stations and food"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "A steady red traffic light means you must:",
+        choices: [
+          "Slow down and proceed with caution",
+          "Stop only if cross traffic is present",
+          "Stop and remain stopped until the light turns green",
+          "Stop, then make a U-turn if safe"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "A flashing red light at an intersection means:",
+        choices: [
+          "Slow down and proceed",
+          "Same as a stop sign",
+          "The signal is about to turn green",
+          "You have the right of way"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "A flashing yellow light at an intersection means:",
+        choices: [
+          "Stop then continue",
+          "The signal is out of order",
+          "Slow down and proceed with caution",
+          "Prepare to stop, red is next"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "A green arrow pointing left means:",
+        choices: [
+          "You may turn left and oncoming traffic is stopped by a red light",
+          "You must yield to oncoming traffic before turning",
+          "You may not turn left at this time",
+          "Left turns are allowed only on green circles"
+        ],
+        correctIndex: 0
+      },
+      {
+        question: "A flashing yellow left arrow means:",
+        choices: [
+          "Protected left turn only",
+          "No left turns allowed",
+          "You may turn left after yielding to oncoming traffic and pedestrians",
+          "Stop and then turn left when clear"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "A single broken yellow line down the center of a two lane road means:",
+        choices: [
+          "No passing from either direction",
+          "Passing allowed from both directions when it is safe",
+          "One way traffic only",
+          "Left turns only"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "Double solid yellow lines in the center of the road mean:",
+        choices: [
+          "Passing allowed from your side only",
+          "Passing allowed only for turning cars",
+          "No passing from either direction",
+          "The road is one way"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "A solid yellow line next to a broken yellow line means:",
+        choices: [
+          "Passing allowed from the side with the solid line",
+          "Passing allowed from the side with the broken line only",
+          "Passing allowed from both sides",
+          "No turns allowed from either lane"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "Solid white lines between lanes of traffic moving in the same direction:",
+        choices: [
+          "Mean lane changes are discouraged or restricted",
+          "Mean you must always change lanes",
+          "Have the same meaning as yellow lines",
+          "Mean passing is encouraged"
+        ],
+        correctIndex: 0
+      },
+      {
+        question: "Crosswalk lines at an intersection mean:",
+        choices: [
+          "You may stop inside the crosswalk when waiting",
+          "You should never stop before the crosswalk",
+          "You must stop before the crosswalk when required",
+          "Pedestrians must always yield to vehicles there"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "At a four way stop, which driver should go first?",
+        choices: [
+          "The driver who arrives last",
+          "The driver on the left",
+          "The driver who is turning left",
+          "The driver who stops first"
+        ],
+        correctIndex: 3
+      },
+      {
+        question: "At a four way stop, two vehicles stop at the same time at opposite sides. One wants to go straight and the other wants to turn left. Who goes first?",
+        choices: [
+          "The left turning driver",
+          "The driver going straight",
+          "The larger vehicle",
+          "The driver who flashes headlights first"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "When two vehicles arrive at an open intersection at about the same time from different roads, which driver must yield?",
+        choices: [
+          "The driver on the right yields to the driver on the left",
+          "The driver on the left yields to the driver on the right",
+          "The faster vehicle has the right of way",
+          "No one yields at open intersections"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "You are entering a road from a driveway, alley or parking lot. You must:",
+        choices: [
+          "Speed up to match traffic",
+          "Yield to vehicles and pedestrians already on the road",
+          "Block at least one lane, then merge",
+          "Honk your horn before entering"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "When turning left at an intersection, you must always:",
+        choices: [
+          "Speed up to clear the intersection quickly",
+          "Turn on your hazard lights",
+          "Yield to oncoming traffic and pedestrians",
+          "Make the turn from any lane"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When a roundabout has no traffic signals, you must:",
+        choices: [
+          "Enter without slowing",
+          "Stop in the middle to look around",
+          "Yield to traffic already in the circle",
+          "Always take the inside lane"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When must you stop for a school bus that is picking up or dropping off children on a two lane road?",
+        choices: [
+          "Only if your lane is closest to the bus",
+          "Only if children are present",
+          "You are not required to stop",
+          "You must stop in both directions until the signals are off"
+        ],
+        correctIndex: 3
+      },
+      {
+        question: "On a divided highway with a raised median, when a school bus stops on the opposite side with red lights flashing:",
+        choices: [
+          "All traffic must stop",
+          "Traffic in the opposite direction does not have to stop",
+          "You must slow to 15 mph but do not stop",
+          "You stop only if the driver signals you"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "At a crosswalk with no traffic signal, you should:",
+        choices: [
+          "Continue if you are bigger than the pedestrian",
+          "Stop only if a police officer is present",
+          "Yield and stop if a pedestrian is in the crosswalk",
+          "Honk at pedestrians to warn them"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When passing a bicyclist on the road, you should:",
+        choices: [
+          "Pass as closely as possible",
+          "Treat the bicyclist the same as a slow moving vehicle and give plenty of space",
+          "Use your horn so they move over",
+          "Only pass at intersections"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "When an emergency vehicle with lights and siren approaches from behind, you must:",
+        choices: [
+          "Maintain your speed and lane",
+          "Stop in your lane immediately",
+          "Pull over to the closest edge of the road and stop if possible",
+          "Speed up to get out of the way"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "Florida's Move Over law requires you to:",
+        choices: [
+          "Stop completely whenever you see a parked car",
+          "Move over a lane or slow down for stopped emergency or service vehicles with flashing lights",
+          "Turn on your hazard lights near every crash",
+          "Drive on the shoulder to get around stopped traffic"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "In Florida, a driver 21 or older is considered legally impaired at what blood alcohol concentration?",
+        choices: ["0.02", "0.05", "0.08", "0.10"],
+        correctIndex: 2
+      },
+      {
+        question: "Florida has a zero tolerance law for drivers under 21. A blood alcohol level of _____ or higher can result in license suspension.",
+        choices: ["0.02", "0.05", "0.08", "0.10"],
+        correctIndex: 0
+      },
+      {
+        question: "The safest plan regarding alcohol and driving is to:",
+        choices: [
+          "Drink only coffee before driving",
+          "Eat a big meal then drive",
+          "Not drive at all after drinking",
+          "Roll down the windows and drive slowly"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "Medicines that can affect driving include:",
+        choices: [
+          "Only illegal drugs",
+          "Only prescription drugs",
+          "Some prescriptions and over the counter medicines that cause drowsiness or slow reaction",
+          "Vitamins and water"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "Florida law requires which occupants to wear safety belts or approved child restraints?",
+        choices: [
+          "Driver and front seat passengers only",
+          "All passengers under 18 and the driver and front seat passengers",
+          "Passengers over 18 only",
+          "Only drivers with a permit"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "In Florida, children under age five are required to:",
+        choices: [
+          "Use any seat belt",
+          "Sit in the front seat only",
+          "Use an approved child restraint device",
+          "Sit on an adult's lap"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "You may not park your vehicle:",
+        choices: [
+          "On a sidewalk",
+          "In front of a driveway",
+          "Within an intersection or on a crosswalk",
+          "All of these locations are illegal"
+        ],
+        correctIndex: 3
+      },
+      {
+        question: "When you park facing uphill with a curb on the right side, you should:",
+        choices: [
+          "Turn wheels toward the curb",
+          "Turn wheels away from the curb",
+          "Leave wheels straight",
+          "Always set the parking brake only"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "On a multi lane highway, the left lane is usually used for:",
+        choices: [
+          "Slow traffic only",
+          "Parking",
+          "Passing and faster moving traffic",
+          "Heavy trucks only"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "You may legally pass another vehicle on the right when:",
+        choices: [
+          "The other driver is turning right",
+          "You are on a two lane road",
+          "The other driver is making a left turn and there is room to pass safely on the right",
+          "You are in a school zone"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When you are being passed by another vehicle on the left, you should:",
+        choices: [
+          "Speed up so they cannot pass",
+          "Move into the left lane",
+          "Stay in your lane and do not increase your speed",
+          "Use your horn"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "If your vehicle begins to skid on a wet road, you should:",
+        choices: [
+          "Brake hard immediately",
+          "Steer in the direction you want the front of the car to go",
+          "Turn the steering wheel in the opposite direction of the skid",
+          "Release your hands from the wheel"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "The best way to avoid rear ending the vehicle in front of you is to:",
+        choices: [
+          "Follow closely so others cannot cut in",
+          "Use a safe following distance and stay alert",
+          "Use your horn every few seconds",
+          "Drive only in the fast lane"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "If you miss your exit on an interstate highway, you should:",
+        choices: [
+          "Stop and back up carefully",
+          "Make a U turn on the shoulder",
+          "Go to the next exit and turn around",
+          "Drive across the median if no one is coming"
+        ],
+        correctIndex: 2
+      },
+      {
+        question: "When approaching a railroad crossing with no lights or gate and you are not sure if a train is coming, you should:",
+        choices: [
+          "Speed up to clear the tracks quickly",
+          "Stop, look and listen before crossing",
+          "Cross without slowing",
+          "Rely on the car ahead to check"
+        ],
+        correctIndex: 1
+      },
+      {
+        question: "If you are involved in a minor crash with no injuries, you should first:",
+        choices: [
+          "Leave the scene immediately",
+          "Move your vehicle out of traffic if possible and exchange information",
+          "Argue with the other driver about fault",
+          "Refuse to show your license"
+        ],
+        correctIndex: 1
+      }
+    ];
+
+    let currentQuestions = [];
+
+    function shuffleArray(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function generateTest() {
+      const shuffled = shuffleArray(questionPool);
+      currentQuestions = shuffled.slice(0, QUESTIONS_PER_TEST);
+
+      const container = document.getElementById("testContainer");
+      container.innerHTML = "";
+      document.getElementById("results").innerHTML = "";
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = false;
+
+      currentQuestions.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = "qcard-" + index;
+
+        const qText = document.createElement("div");
+        qText.className = "question-text";
+        qText.textContent = (index + 1) + ". " + q.question;
+        card.appendChild(qText);
+
+        const choicesDiv = document.createElement("div");
+        choicesDiv.className = "choices";
+
+        q.choices.forEach((choice, cIndex) => {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "q" + index;
+          input.value = cIndex;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + choice));
+          choicesDiv.appendChild(label);
+        });
+
+        card.appendChild(choicesDiv);
+        container.appendChild(card);
+      });
+    }
+
+    function gradeTest() {
+      let correctCount = 0;
+      let unansweredCount = 0;
+
+      currentQuestions.forEach((q, index) => {
+        const name = "q" + index;
+        const inputs = document.getElementsByName(name);
+        let selected = -1;
+
+        inputs.forEach((input) => {
+          if (input.checked) {
+            selected = parseInt(input.value, 10);
+          }
+          input.disabled = true;
+        });
+
+        const card = document.getElementById("qcard-" + index);
+        let feedbackDiv = card.querySelector(".feedback");
+        if (!feedbackDiv) {
+          feedbackDiv = document.createElement("div");
+          feedbackDiv.className = "feedback";
+          card.appendChild(feedbackDiv);
+        } else {
+          feedbackDiv.innerHTML = "";
+        }
+
+        if (selected === -1) {
+          unansweredCount++;
+          feedbackDiv.innerHTML =
+            '<span class="incorrect">No answer selected.</span> ' +
+            '<span class="correct-answer"> Correct answer: ' +
+            q.choices[q.correctIndex] + "</span>";
+        } else if (selected === q.correctIndex) {
+          correctCount++;
+          feedbackDiv.innerHTML =
+            '<span class="correct-answer">Correct.</span> ' +
+            '<span class="your-answer"> You chose: ' +
+            q.choices[selected] + "</span>";
+        } else {
+          feedbackDiv.innerHTML =
+            '<span class="incorrect">Incorrect.</span> ' +
+            '<span class="your-answer"> You chose: ' +
+            q.choices[selected] + ".</span> " +
+            '<span class="correct-answer"> Correct answer: ' +
+            q.choices[q.correctIndex] + "</span>";
+        }
+      });
+
+      const resultsDiv = document.getElementById("results");
+      const passed = correctCount >= PASSING_SCORE;
+      resultsDiv.innerHTML =
+        "<h3>Results</h3>" +
+        "<p>Correct answers: <strong>" + correctCount + "</strong> out of " +
+        currentQuestions.length + "</p>" +
+        "<p>Unanswered questions: " + unansweredCount + "</p>" +
+        "<p class='" + (passed ? "pass" : "fail") + "'>" +
+        (passed ? "Pass (meets the real exam standard)." : "Fail (below the real exam passing score).") +
+        "</p>" +
+        "<p>You can scroll up to review each question and compare your choices to the correct answers, " +
+        "then click “New Test” at the bottom to get a fresh random exam.</p>";
+
+      document.getElementById("submitBtn").disabled = true;
+    }
+
+    document.getElementById("startBtn").addEventListener("click", function () {
+      generateTest();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", function () {
+      gradeTest();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    });
+
+    window.addEventListener("load", generateTest);
+  </script>
+</body>
+</html>
