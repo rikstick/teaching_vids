@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Florida Road Signs Practice Test Written for Arissa Bass</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 16px 40px 16px;
+      background: #f2f4f8;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      font-weight: normal;
+      font-size: 1.1rem;
+      color: #444;
+    }
+    #intro {
+      margin: 10px 0 15px 0;
+      padding: 10px 15px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.08);
+      font-size: 0.95em;
+    }
+    #colorKey {
+      margin: 10px 0 20px 0;
+      padding: 10px 15px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.08);
+      font-size: 0.95em;
+    }
+    #colorKey h4 {
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+    #colorKey ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    #colorKey li {
+      margin: 2px 0;
+    }
+    #testContainer img {
+      max-width: 130px;
+      max-height: 130px;
+      display: block;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      background: white;
+    }
+    #bottomControls, #results {
+      margin: 18px 0;
+      padding: 12px 15px;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.08);
+    }
+    .question-card {
+      background: #ffffff;
+      margin: 10px 0;
+      padding: 12px 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 12px;
+    }
+    .question-image {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .question-body {
+      flex: 1 1 auto;
+    }
+    .question-text {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .choices label {
+      display: block;
+      margin: 3px 0;
+      cursor: pointer;
+      font-size: 0.95em;
+    }
+    .choices input[type="radio"] {
+      margin-right: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #777;
+      background: #e0e0e0;
+      margin-right: 8px;
+    }
+    button:hover:not(:disabled) {
+      background: #d0d0d0;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+    .fail {
+      color: #c00;
+      font-weight: bold;
+    }
+    .feedback {
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px solid #eee;
+      font-size: 0.9em;
+    }
+    .correct-answer {
+      color: green;
+    }
+    .your-answer {
+      color: #333;
+    }
+    .incorrect {
+      color: #c00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Florida Road Signs Practice Test Written for Arissa Bass</h1>
+  <h2>Randomized Sign Meanings</h2>
+
+  <div id="intro">
+    This practice test uses the same style of signs your Florida handbook shows.
+    Each question displays one sign and asks what it means.
+    The order of the questions and the answer choices is shuffled every time you start a new test.
+  </div>
+
+  <div id="colorKey">
+    <h4>Traffic Sign Colors</h4>
+    <ul>
+      <li><strong>Red:</strong> Stop. Do not enter. Wrong way. Yield.</li>
+      <li><strong>Orange:</strong> Construction and maintenance warning.</li>
+      <li><strong>Yellow:</strong> General warning. Advisory of unexpected roadway conditions.</li>
+      <li><strong>Fluorescent Yellow Green:</strong> High emphasis warning of school, pedestrian and bicycling activity.</li>
+      <li><strong>White/Black:</strong> Regulatory. Control traffic, set limits or give commands.</li>
+      <li><strong>Green:</strong> Guide or directional information.</li>
+      <li><strong>Blue:</strong> Driver guidance. Also used to identify parking spaces for disabled drivers.</li>
+      <li><strong>Brown:</strong> Areas of public recreation, cultural and historical significance.</li>
+    </ul>
+  </div>
+
+  <div id="testContainer"></div>
+
+  <div id="bottomControls">
+    <button id="submitBtn">Submit Test for Grading</button>
+    <button id="startBtn">New Test (Random Order)</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const PASSING_FRACTION = 0.8;
+
+    const signQuestions = [
+      { label: "Soft Shoulder", img: "signs/soft shoulder.jpg",
+        meaning: "The ground beside the pavement is soft. Do not leave the roadway except in an emergency." },
+      { label: "Low Clearance", img: "signs/low clearance.jpg",
+        meaning: "Do not enter if your vehicle is taller than the height shown on the sign." },
+      { label: "Hill / Downgrade", img: "signs/hill_downgrade.jpg",
+        meaning: "Steep hill or downgrade ahead. Slow down and be ready to shift to a lower gear." },
+      { label: "Animal Crossing", img: "signs/animal crossing.jpg",
+        meaning: "Animals commonly cross the roadway in this area. Watch carefully and be prepared to stop." },
+      { label: "One Lane Bridge", img: "signs/one lane bridge.jpg",
+        meaning: "Bridge narrows to a single lane. Yield to oncoming traffic when necessary." },
+      { label: "Pedestrian Crossing", img: "signs/pedestrian crossing.jpg",
+        meaning: "Watch for people crossing the street. Slow down or stop to yield to pedestrians." },
+      { label: "Truck Crossing", img: "signs/truck crossing.jpg",
+        meaning: "Watch for trucks entering or crossing the roadway." },
+      { label: "Narrow Bridge", img: "signs/narrow bridge.jpg",
+        meaning: "Bridge ahead is narrower than the road. Stay in your lane and use caution." },
+      { label: "Emergency Vehicle Crossing", img: "signs/emergency vehicle.jpg",
+        meaning: "Watch for emergency vehicles entering or crossing the roadway." },
+      { label: "Dip", img: "signs/dip in road.jpg",
+        meaning: "There is a low place in the road. Slow down and be ready for a dip." },
+      { label: "Bicycle Crossing", img: "signs/bicycle crossing.jpg",
+        meaning: "Watch for bicyclists entering or crossing the roadway." },
+      { label: "Slippery When Wet", img: "signs/slippery surface.jpg",
+        meaning: "Road may be slippery when wet. Reduce speed and avoid sudden moves." },
+      { label: "Side Road", img: "signs/side road.jpg",
+        meaning: "Another road joins from the side. Watch for entering traffic." },
+      { label: "Crossroad", img: "signs/cross road.jpg",
+        meaning: "Another road crosses the main road ahead. Watch for cross traffic." },
+      { label: "Reduction of Lanes", img: "signs/reduction of lanes.jpg",
+        meaning: "A lane ends ahead. Traffic must merge into the remaining lane." },
+      { label: "Winding Road", img: "signs/winding road.jpg",
+        meaning: "Several curves or turns are ahead. Slow down and drive carefully." },
+      { label: "Merging Traffic", img: "signs/merging traffic.jpg",
+        meaning: "Another lane of traffic merges ahead. Adjust speed and position to let vehicles merge." },
+      { label: "Reverse Curve", img: "signs/reverse curve.jpg",
+        meaning: "Road curves in one direction and then the opposite direction." },
+      { label: "Sharp Right Turn", img: "signs/sharp right turn.jpg",
+        meaning: "Road makes a sharp turn to the right. Slow down and do not pass." },
+      { label: "Two-Way Traffic Ahead", img: "signs/two-way traffic ahead.jpg",
+        meaning: "Roadway changes to two-way traffic. Expect oncoming vehicles." },
+      { label: "Right Curve", img: "signs/right curve.jpg",
+        meaning: "Road curves to the right ahead. Slow to a safe speed." },
+      { label: "Advisory Speed", img: "signs/advisory speed sign.jpg",
+        meaning: "Recommended safe speed for the curve or special condition ahead." },
+      { label: "Speed Reduction Ahead", img: "signs/speed reduction.jpg",
+        meaning: "Advance notice of a lower speed limit ahead. Begin to slow down." },
+      { label: "Yield Ahead", img: "signs/yield ahead.jpg",
+        meaning: "Yield sign ahead. Be ready to slow or stop to give the right-of-way." },
+      { label: "Divided Highway Ahead", img: "signs/divided highway ahead.jpg",
+        meaning: "Roadway ahead is divided by a median or barrier." },
+      { label: "Stop Sign Ahead", img: "signs/stop sign ahead.jpg",
+        meaning: "Stop sign ahead. Slow down and be prepared to stop." },
+      { label: "Roundabout", img: "signs/roundabout circle.jpg",
+        meaning: "Roundabout or traffic circle ahead. Slow down and prepare to yield to traffic in the circle." },
+      { label: "Traffic Signal Ahead", img: "signs/traffic signal ahead.jpg",
+        meaning: "Traffic signal ahead. Be prepared for a change in the light." },
+      { label: "No Passing Zone", img: "signs/no passing.jpg",
+        meaning: "You may not pass other vehicles in this area." },
+      { label: "Slower Traffic Keep Right", img: "signs/slower traffic keep right.jpg",
+        meaning: "Slower vehicles must stay in the right lane except when passing." },
+      { label: "Keep Right", img: "signs/keep right.jpg",
+        meaning: "Stay to the right of the divider or obstruction." },
+      { label: "Parking by Disabled Permit Only", img: "signs/parking by disabled permit only.jpg",
+        meaning: "Parking is reserved for vehicles with an official disabled parking permit." },
+      { label: "One Way", img: "signs/one way.jpg",
+        meaning: "Traffic on this road flows only in the direction of the arrow." },
+      { label: "Must Turn", img: "signs/must turn.jpg",
+        meaning: "You must turn in the direction shown. Going straight is not allowed." },
+      { label: "No Parking on Pavement", img: "signs/no parking on pavement.jpg",
+        meaning: "Stopping is allowed only briefly. Vehicles may not be parked on the pavement." },
+      { label: "No Turns", img: "signs/no turns.jpg",
+        meaning: "You may not turn left or right at this intersection." },
+      { label: "Emergency Stopping Only", img: "signs/emergency stopping only.jpg",
+        meaning: "Stopping is permitted only for emergencies." },
+      { label: "No Turn on Red", img: "signs/no turn on red.jpg",
+        meaning: "You may not turn on a red light where this sign is posted." },
+      { label: "Restricted Lane Ahead", img: "signs/restricted lane area.jpg",
+        meaning: "Lane is reserved for certain vehicles or uses as shown on the sign." },
+      { label: "No Right Turn", img: "signs/no right turn.jpg",
+        meaning: "Right turns are not allowed at this intersection." },
+      { label: "Pass With Care", img: "signs/pass with care.jpg",
+        meaning: "You may pass, but only when it is safe to do so." },
+      { label: "No U-Turn", img: "signs/no u turn.jpg",
+        meaning: "You may not make a U-turn at this location." },
+      { label: "Brown and White Scenic Sign", img: "signs/brown and white scenic sign.jpg",
+        meaning: "Indicates a park, recreational, or cultural interest area." },
+      { label: "Blue and White Service Sign", img: "signs/blue and white service sign.jpg",
+        meaning: "Indicates services such as gas, food, lodging, or hospitals." },
+      { label: "Green Guide Sign", img: "signs/green guide sign.jpg",
+        meaning: "Provides guide or directional information about routes and destinations." },
+      { label: "Speed Limit", img: "signs/speed limit.jpg",
+        meaning: "Shows the maximum legal speed allowed under ideal conditions." },
+      { label: "Exit Speed", img: "signs/exit speed.jpg",
+        meaning: "Shows the safe speed for a freeway or ramp exit." },
+      { label: "Speeding Fines Doubled", img: "signs/speeding fines doubled.jpg",
+        meaning: "Speeding fines are higher in this area, often a work zone." },
+      { label: "Turn Lanes", img: "signs/turn lanes.jpg",
+        meaning: "Shows which lanes allow turns or through movement at an intersection." },
+      { label: "Center Turn Lane", img: "signs/center turn lane.jpg",
+        meaning: "Shared center lane is for left turns from both directions." },
+      { label: "Left Lane Must Turn", img: "signs/left lane must turn.jpg",
+        meaning: "Traffic in the left lane must turn in the direction shown." },
+      { label: "Do Not Enter", img: "signs/do not enter.jpg",
+        meaning: "Do not drive into this road. Traffic is moving toward you." },
+      { label: "Yield", img: "signs/yield.jpg",
+        meaning: "Slow down and give the right-of-way to traffic and pedestrians." },
+      { label: "All Way Stop", img: "signs/all way stop.jpg",
+        meaning: "All approaches to the intersection must stop. The first vehicle to arrive goes first." }
+    ];
+
+    let currentOrder = [];
+
+    function shuffle(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+      return arr;
+    }
+
+    function generateTest() {
+      const container = document.getElementById("testContainer");
+      container.innerHTML = "";
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("submitBtn").disabled = false;
+
+      currentOrder = shuffle(signQuestions);
+      const meanings = signQuestions.map(q => q.meaning);
+
+      currentOrder.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = "qcard-" + index;
+
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "question-image";
+        const img = document.createElement("img");
+        img.src = q.img;
+        img.alt = q.label;
+        imgDiv.appendChild(img);
+
+        const bodyDiv = document.createElement("div");
+        bodyDiv.className = "question-body";
+
+        const qText = document.createElement("div");
+        qText.className = "question-text";
+        qText.textContent = (index + 1) + ". What does this sign mean?";
+        bodyDiv.appendChild(qText);
+
+        const choicesDiv = document.createElement("div");
+        choicesDiv.className = "choices";
+
+        const otherMeanings = shuffle(meanings.filter(m => m !== q.meaning));
+        const optionTexts = shuffle([
+          q.meaning,
+          otherMeanings[0],
+          otherMeanings[1],
+          otherMeanings[2]
+        ]);
+
+        optionTexts.forEach(choiceText => {
+          const labelEl = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "q" + index;
+          input.value = choiceText;
+          labelEl.appendChild(input);
+          labelEl.appendChild(document.createTextNode(" " + choiceText));
+          choicesDiv.appendChild(labelEl);
+        });
+
+        bodyDiv.appendChild(choicesDiv);
+        card.appendChild(imgDiv);
+        card.appendChild(bodyDiv);
+        container.appendChild(card);
+      });
+    }
+
+    function gradeTest() {
+      let correctCount = 0;
+      let unansweredCount = 0;
+
+      currentOrder.forEach((q, index) => {
+        const inputs = document.getElementsByName("q" + index);
+        let selected = null;
+
+        inputs.forEach(input => {
+          if (input.checked) {
+            selected = input.value;
+          }
+          input.disabled = true;
+        });
+
+        const card = document.getElementById("qcard-" + index);
+        let feedbackDiv = card.querySelector(".feedback");
+        if (!feedbackDiv) {
+          feedbackDiv = document.createElement("div");
+          feedbackDiv.className = "feedback";
+          card.appendChild(feedbackDiv);
+        } else {
+          feedbackDiv.innerHTML = "";
+        }
+
+        if (!selected) {
+          unansweredCount++;
+          feedbackDiv.innerHTML =
+            '<span class="incorrect">No answer selected.</span> ' +
+            '<span class="correct-answer">Correct meaning: ' + q.meaning + '</span>';
+        } else if (selected === q.meaning) {
+          correctCount++;
+          feedbackDiv.innerHTML =
+            '<span class="correct-answer">Correct.</span> ' +
+            '<span class="your-answer">You chose: ' + selected + '</span>';
+        } else {
+          feedbackDiv.innerHTML =
+            '<span class="incorrect">Incorrect.</span> ' +
+            '<span class="your-answer">You chose: ' + selected + '.</span> ' +
+            '<span class="correct-answer">Correct meaning: ' + q.meaning + '</span>';
+        }
+      });
+
+      const total = currentOrder.length;
+      const passingScore = Math.ceil(total * PASSING_FRACTION);
+      const passed = correctCount >= passingScore;
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML =
+        "<h3>Results</h3>" +
+        "<p>Correct answers: <strong>" + correctCount + "</strong> out of " + total + "</p>" +
+        "<p>Unanswered questions: " + unansweredCount + "</p>" +
+        "<p>Passing score for this quiz: " + passingScore + " correct (" + (PASSING_FRACTION * 100) + "%).</p>" +
+        "<p class='" + (passed ? "pass" : "fail") + "'>" +
+        (passed ? "Pass." : "Fail.") + "</p>" +
+        "<p>Scroll up to review each question and compare your choice to the correct meaning. " +
+        "When you are ready, click <strong>New Test</strong> to reshuffle the questions.</p>";
+
+      document.getElementById("submitBtn").disabled = true;
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    document.getElementById("startBtn").addEventListener("click", function () {
+      generateTest();
+      window.scrollTo(0, 0);
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", function () {
+      gradeTest();
+    });
+
+    window.addEventListener("load", generateTest);
+  </script>
+</body>
+</html>
